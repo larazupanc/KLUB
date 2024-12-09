@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "184354255783",
+    "project_id": "klubplus-c150c",
+    "storage_bucket": "klubplus-c150c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184354255783:android:d1162ed21dd9c3afd63c82",
+        "android_client_info": {
+          "package_name": "com.example.testni_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZc3FW4DOxtcbuf_JOW4BhnS3-DgTy2pE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -32,6 +32,8 @@ dependencies:
     sdk: flutter
   table_calendar: ^3.0.9
   syncfusion_flutter_calendar: ^27.2.4
+  firebase_auth: ^5.0.0
+
 
 
 
