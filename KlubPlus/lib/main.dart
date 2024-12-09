@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'screens/home_screen.dart';
 import 'screens/koledar_screen.dart';
-import 'screens/login.dart';
+import 'css/styles.dart'; // Import the AppStyles
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,7 @@ class MojaAplikacija extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginScreen(), // Start with LoginScreen every time
+      home: const LoginScreen(),
     );
   }
 }
@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } catch (e) {
       setState(() {
-        _message = "Login failed: $e";
+        _message = "Ne veljaven profil";
       });
     }
   }
@@ -64,36 +64,76 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: "Email"),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: AppStyles.generalPadding,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  "Dobrodošli v KLUB+",
+                  textAlign: TextAlign.center,
+                  style: AppStyles.headerTitle, // Use headerTitle from AppStyles
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    hintText: "@username",
+                    hintStyle: AppStyles.defaultDayTextStyle, // Match with text styling
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    hintStyle: AppStyles.defaultDayTextStyle,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    suffixIcon: Icon(Icons.visibility_off,
+                        color: AppStyles.iconColorKoledar),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppStyles.iconBackgroundColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  ),
+                  child: const Text(
+                    "Prijava",
+                    style: AppStyles.calendarDayTextStyle, // Use consistent text styling
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    // Implement forgot password functionality
+                  },
+                  style: AppStyles.greenTextButton, // Match button style
+                  child: const Text("Pozabljeno geslo?"),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: "Password"),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _login,
-              child: const Text("Log In"),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              _message,
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -130,9 +170,12 @@ class _NavigationControllerState extends State<NavigationController> {
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Koledar'),
-          BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Dogodki'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Nastavitve'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home), label: 'Koledar'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.event), label: 'Dogodki'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: 'Nastavitve'),
         ],
       ),
     );
