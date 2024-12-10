@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:testni_app/screens/dogodki.dart';
 import 'screens/home_screen.dart';
 import 'screens/koledar_screen.dart';
 import 'css/styles.dart'; // Import the AppStyles
@@ -154,7 +155,7 @@ class _NavigationControllerState extends State<NavigationController> {
   final List<Widget> _pages = [
     HomeScreen(),
     KoledarScreen(),
-    Center(child: Text('Dogodki Page')),
+    NekiScreen(),
     Center(child: Text('Nastavitve Page')),
   ];
 
