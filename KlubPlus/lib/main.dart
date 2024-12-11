@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:testni_app/screens/dogodki.dart';
+import 'package:testni_app/screens/sestanki.dart';
 import 'screens/home_screen.dart';
 import 'screens/koledar_screen.dart';
 import 'css/styles.dart'; // Import the AppStyles
@@ -155,8 +156,8 @@ class _NavigationControllerState extends State<NavigationController> {
   final List<Widget> _pages = [
     HomeScreen(),
     KoledarScreen(),
+    SestankiScreen(),
     NekiScreen(),
-    Center(child: Text('Nastavitve Page')),
   ];
 
   @override
@@ -164,6 +165,9 @@ class _NavigationControllerState extends State<NavigationController> {
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+
+        selectedItemColor: Color(0xFF004d40), // Set the selected icon and text color to green
+        unselectedItemColor: Colors.grey,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -171,13 +175,12 @@ class _NavigationControllerState extends State<NavigationController> {
           });
         },
         items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home), label: 'Koledar'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.event), label: 'Dogodki'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: 'Nastavitve'),
+          BottomNavigationBarItem(icon: Icon(Icons.home,color: Color(0xFF004d40)), label: 'Domov'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month,color: Color(0xFF004d40)), label: 'Koledar'),
+          BottomNavigationBarItem(icon: Icon(Icons.cases_sharp,color: Color(0xFF004d40)), label: 'Sestanki'),
+          BottomNavigationBarItem(icon: Icon(Icons.emoji_events,color: Color(0xFF004d40)), label: 'Dogodki'),
         ],
+
       ),
     );
   }
