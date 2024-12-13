@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore for saving data
+import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
 import 'package:testni_app/css/styles.dart'; // Import your styles
 
 class UserRegistrationScreen extends StatefulWidget {
@@ -16,7 +17,12 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
   String? _selectedRole;
   String _message = "";
 
-  final List<String> _roles = ["Predsednik", "Aktivist", "Tajnica", "Social Media Manager"];
+  final List<String> _roles = [
+    "Predsednik",
+    "Aktivist",
+    "Tajnica",
+    "Social Media Manager"
+  ];
 
   Future<void> _registerUser() async {
     try {
@@ -27,15 +33,33 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
         return;
       }
 
+      if (_passwordController.text.isEmpty) {
+        setState(() {
+          _message = "Vnesi geslo.";
+        });
+        return;
+      }
+
+      // Create user in Firebase Authentication
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
       // Save user data to Firestore
-      await FirebaseFirestore.instance.collection('users').add({
-        'name': _nameController.text,
-        'email': _emailController.text,
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid) // Use UID as the document ID
+          .set({
+        'name': _nameController.text.trim(),
+        'email': _emailController.text.trim(),
         'role': _selectedRole,
+        'created_at': FieldValue.serverTimestamp(), // Store timestamp
       });
 
       setState(() {
-        _message = "uspesn!";
+        _message = "Uporabnik uspešno registriran!";
       });
 
       // Clear the fields
@@ -47,7 +71,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
       });
     } catch (e) {
       setState(() {
-        _message = " failed: $e";
+        _message = "Registracija ni uspela: $e";
       });
     }
   }
@@ -70,7 +94,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: "Name"),
+              decoration: const InputDecoration(labelText: "Ime"),
             ),
             const SizedBox(height: 10),
             TextField(
@@ -78,8 +102,14 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
               decoration: const InputDecoration(labelText: "Email"),
             ),
             const SizedBox(height: 10),
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: "Geslo"),
+              obscureText: true, // Hide password text
+            ),
+            const SizedBox(height: 10),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: "Role"),
+              decoration: const InputDecoration(labelText: "Vloga"),
               value: _roles.contains(_selectedRole) ? _selectedRole : null,
               items: _roles
                   .map((role) => DropdownMenuItem(
@@ -103,7 +133,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
               _message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: _message.contains("failed") ? Colors.red : Colors.green,
+                color: _message.contains("ni uspela") ? Colors.red : Colors.green,
               ),
             ),
           ],
