@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:testni_app/screens/dogodki.dart';
+import 'package:testni_app/screens/registracija.dart';
 import 'package:testni_app/screens/sestanki.dart';
 import 'screens/home_screen.dart';
 import 'screens/koledar_screen.dart';
@@ -158,6 +159,7 @@ class _NavigationControllerState extends State<NavigationController> {
     KoledarScreen(),
     SestankiScreen(),
     NekiScreen(),
+    UserRegistrationScreen(),
   ];
 
   @override
@@ -179,6 +181,8 @@ class _NavigationControllerState extends State<NavigationController> {
           BottomNavigationBarItem(icon: Icon(Icons.calendar_month,color: Color(0xFF004d40)), label: 'Koledar'),
           BottomNavigationBarItem(icon: Icon(Icons.cases_sharp,color: Color(0xFF004d40)), label: 'Sestanki'),
           BottomNavigationBarItem(icon: Icon(Icons.emoji_events,color: Color(0xFF004d40)), label: 'Dogodki'),
+          BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle,color: Color(0xFF004d40)), label: 'Registracija'),
+
         ],
 
       ),
