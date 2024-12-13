@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:testni_app/css/styles.dart'; // Import your styles
 
 class LoginScreen extends StatefulWidget {
@@ -16,13 +17,39 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      // Sign in the user
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      setState(() {
-        _message = "Login successful!";
-      });
+
+      // Fetch user role from Firestore
+      String userId = userCredential.user!.uid;
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users') // The collection containing user info
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        String role = userDoc['role']; // Fetch the 'role' field from Firestore
+
+        setState(() {
+          _message = "Login successful as $role!";
+        });
+
+        // Navigate based on role
+        if (role == 'admin') {
+          // Admin route (example: Admin dashboard screen)
+          Navigator.pushReplacementNamed(context, '/adminHome');
+        } else {
+          // Normal user route (example: User dashboard screen)
+          Navigator.pushReplacementNamed(context, '/userHome');
+        }
+      } else {
+        setState(() {
+          _message = "User document does not exist!";
+        });
+      }
     } catch (e) {
       setState(() {
         _message = "Login failed: $e";
@@ -57,16 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _passwordController,
               decoration: const InputDecoration(labelText: "Password"),
               obscureText: true,
-
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _login,
-              style: ElevatedButton.styleFrom(
-              ),
-              child: const Text(
-                "Log In",
-              ),
+              style: ElevatedButton.styleFrom(),
+              child: const Text("Log In"),
             ),
             const SizedBox(height: 10),
             Text(

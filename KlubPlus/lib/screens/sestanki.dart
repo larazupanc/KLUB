@@ -296,7 +296,7 @@ class MeetingCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.business_center,
+                  Icons.cases_sharp,
                   color: Colors.lightGreenAccent,
                   size: 24.0,
                 ),

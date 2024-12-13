@@ -7,6 +7,8 @@ import 'package:testni_app/screens/sestanki.dart';
 import 'screens/home_screen.dart';
 import 'screens/koledar_screen.dart';
 import 'css/styles.dart'; // Import the AppStyles
+import 'package:testni_app/screens/registracija.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
