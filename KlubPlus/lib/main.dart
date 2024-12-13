@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Add Firestore import
 import 'package:testni_app/screens/dogodki.dart';
-import 'package:testni_app/screens/registracija.dart';
-import 'package:testni_app/screens/sestanki.dart';
 import 'screens/home_screen.dart';
 import 'screens/koledar_screen.dart';
+import 'screens/sestanki.dart';
+import 'screens/registracija.dart';
 import 'css/styles.dart'; // Import the AppStyles
-import 'package:testni_app/screens/registracija.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +34,6 @@ class MojaAplikacija extends StatelessWidget {
   }
 }
 
-// LoginScreen handles authentication and redirects to NavigationController
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -50,18 +48,40 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+      // Sign in the user
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
-      // Navigate to main app after login
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const NavigationController()),
-      );
+
+      // Fetch user role from Firestore
+      String userId = userCredential.user!.uid;
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        String role = userDoc.get('role') ?? 'Unknown'; // Safely fetch role field
+        print('User role from Firestore: $role'); // Debugging Firestore value
+
+        setState(() {
+          _message = "Login successful as $role!";
+        });
+
+        // Navigate to NavigationController with the role
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => NavigationController(role: role)),
+        );
+      } else {
+        setState(() {
+          _message = "User document does not exist!";
+        });
+      }
     } catch (e) {
       setState(() {
-        _message = "Ne veljaven profil";
+        _message = "Login failed: $e";
       });
     }
   }
@@ -145,9 +165,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// NavigationController remains unchanged
 class NavigationController extends StatefulWidget {
-  const NavigationController({super.key});
+  final String role; // Accept the role
+  const NavigationController({super.key, required this.role});
 
   @override
   _NavigationControllerState createState() => _NavigationControllerState();
@@ -156,21 +176,51 @@ class NavigationController extends StatefulWidget {
 class _NavigationControllerState extends State<NavigationController> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    HomeScreen(),
-    KoledarScreen(),
-    SestankiScreen(),
-    NekiScreen(),
-    UserRegistrationScreen(),
-  ];
+  // Define pages and items for different roles
+  late List<Widget> _pages;
+  late List<BottomNavigationBarItem> _navItems;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.role == 'Predsednik') {
+      _pages = [
+        HomeScreen(),
+        KoledarScreen(),
+        SestankiScreen(),
+        UserRegistrationScreen(),
+        NekiScreen()
+      ];
+      _navItems = const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Domov'),
+        BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Koledar'),
+        BottomNavigationBarItem(icon: Icon(Icons.cases_sharp), label: 'Sestanki'),
+        BottomNavigationBarItem(icon: Icon(Icons.sports_bar), label: 'Dogodki'),
+        BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle), label: 'Registracija'),
+      ];
+    } else {
+      _pages = [
+        HomeScreen(),
+        KoledarScreen(),
+        SestankiScreen(),
+        NekiScreen()
+      ];
+      _navItems = const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Domov'),
+        BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Koledar'),
+        BottomNavigationBarItem(icon: Icon(Icons.sports_bar), label: 'Dogodki'),
+        BottomNavigationBarItem(icon: Icon(Icons.cases_sharp), label: 'Sestanki'),
+      ];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-
-        selectedItemColor: Color(0xFF004d40), // Set the selected icon and text color to green
+        selectedItemColor: const Color(0xFF004d40),
         unselectedItemColor: Colors.grey,
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -178,15 +228,7 @@ class _NavigationControllerState extends State<NavigationController> {
             _currentIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home,color: Color(0xFF004d40)), label: 'Domov'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month,color: Color(0xFF004d40)), label: 'Koledar'),
-          BottomNavigationBarItem(icon: Icon(Icons.cases_sharp,color: Color(0xFF004d40)), label: 'Sestanki'),
-          BottomNavigationBarItem(icon: Icon(Icons.emoji_events,color: Color(0xFF004d40)), label: 'Dogodki'),
-          BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle,color: Color(0xFF004d40)), label: 'Registracija'),
-
-        ],
-
+        items: _navItems,
       ),
     );
   }
