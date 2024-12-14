@@ -189,8 +189,8 @@ class _NavigationControllerState extends State<NavigationController> {
         HomeScreen(),
         KoledarScreen(),
         SestankiScreen(),
+        NekiScreen(),
         UserRegistrationScreen(),
-        NekiScreen()
       ];
       _navItems = const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Domov'),
@@ -203,8 +203,8 @@ class _NavigationControllerState extends State<NavigationController> {
       _pages = [
         HomeScreen(),
         KoledarScreen(),
+        NekiScreen(),
         SestankiScreen(),
-        NekiScreen()
       ];
       _navItems = const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Domov'),

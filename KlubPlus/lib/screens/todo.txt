@@ -1,6 +1,6 @@
 To-do
 Do 16. 12.:
-ko se uporabnik prijavi se mi prikazujejo razlicni screeni glee na role
+DONE ko se uporabnik prijavi se mi prikazujejo razlicni screeni glee na role
 pravilno prikazovanje na home screen +  izgled
 koledar- prikaz dogodkov in dodajanje preko koledarja
 
