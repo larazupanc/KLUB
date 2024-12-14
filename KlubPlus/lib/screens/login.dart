@@ -69,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
         elevation: 0, // Flat header style
         iconTheme: const IconThemeData(color: AppStyles.iconColor),
       ),
+      backgroundColor: Color(0xFAFAFAFA),
       body: Padding(
         padding: AppStyles.generalPadding,
         child: Column(

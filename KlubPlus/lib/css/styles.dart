@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 
 class AppStyles {
-  // General Padding
+  static const Color backgroundColor = Colors.white;
   static const EdgeInsets generalPadding = EdgeInsets.all(16.0);
-
-  // Section Title Style
   static const TextStyle sectionTitle = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.bold,
     color: Color(0xFF004d40), // Dark green color
   );
 
-  // Event/Meeting Title Style
   static const TextStyle cardTitle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.bold,
@@ -55,7 +52,9 @@ class AppStyles {
   static const Color unselectedNavBarItem = Colors.grey; // Unselected icon/text color
 
   static BoxDecoration navBarDecoration = BoxDecoration(
-    color: navBarBackground,
+    color: Colors.white,
+
+
     borderRadius: BorderRadius.circular(24.0), // Rounded edges
     boxShadow: [
       BoxShadow(

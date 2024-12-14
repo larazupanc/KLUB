@@ -8,12 +8,14 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home', style: TextStyle(color: Color(0xFF004d40))),
+        title: const Text('Klub+', style: TextStyle(color: Color(0xFF004d40))),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.lightGreenAccent),
       ),
-      body: Column(
+      backgroundColor: Color(0xFAFAFAFA),
+
+    body: Column(
         children: [
           // Upper Half: Sestanki
           Expanded(

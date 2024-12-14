@@ -87,6 +87,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
         backgroundColor: AppStyles.headerBackgroundColor,
         elevation: 0,
       ),
+      backgroundColor: Color(0xFAFAFAFA),
       body: Padding(
         padding: AppStyles.generalPadding,
         child: Column(

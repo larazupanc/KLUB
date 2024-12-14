@@ -8,10 +8,10 @@ class SestankiScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sestanki', style: TextStyle(color: Color(0xFF004d40))),
-        backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.lightGreenAccent),
       ),
+      backgroundColor: Color(0xFAFAFAFA),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('sestanki').snapshots(),
         builder: (context, snapshot) {

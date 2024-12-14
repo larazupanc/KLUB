@@ -4,11 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:testni_app/css/styles.dart';
 class KoledarScreen extends StatefulWidget {
   const KoledarScreen({super.key});
-
   @override
   _KoledarScreenState createState() => _KoledarScreenState();
 }
-
 class _KoledarScreenState extends State<KoledarScreen> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
@@ -20,7 +18,6 @@ class _KoledarScreenState extends State<KoledarScreen> {
     super.initState();
     _loadEvents();
   }
-
   Future<void> _loadEvents() async {
     final Map<DateTime, List<Map<String, dynamic>>> events = {};
 
@@ -74,12 +71,12 @@ class _KoledarScreenState extends State<KoledarScreen> {
           "Koledar",
           style: AppStyles.headerTitle,
         ),
-        backgroundColor: AppStyles.headerBackgroundColor,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppStyles.iconColor),
       ),
+      backgroundColor: Color(0xFAFAFAFA),
       body: Padding(
-        padding: AppStyles.generalPadding,
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TableCalendar(
@@ -100,7 +97,7 @@ class _KoledarScreenState extends State<KoledarScreen> {
               },
               calendarStyle: CalendarStyle(
                 todayDecoration: BoxDecoration(
-                  color: AppStyles.highlightColor,
+                  color:  Colors.white,
                   shape: BoxShape.circle,
                 ),
                 selectedDecoration: BoxDecoration(

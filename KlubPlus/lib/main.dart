@@ -12,23 +12,16 @@ import 'css/styles.dart'; // Import the AppStyles
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  // Ensure the user is logged out at startup
   await FirebaseAuth.instance.signOut();
 
   runApp(const MojaAplikacija());
 }
-
 class MojaAplikacija extends StatelessWidget {
   const MojaAplikacija({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Aplikacija za vnos zaposlenih',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      title: 'KlubPlus',
       home: const LoginScreen(),
     );
   }
@@ -54,7 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text.trim(),
       );
 
-      // Fetch user role from Firestore
       String userId = userCredential.user!.uid;
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -62,14 +54,12 @@ class _LoginScreenState extends State<LoginScreen> {
           .get();
 
       if (userDoc.exists && userDoc.data() != null) {
-        String role = userDoc.get('role') ?? 'Unknown'; // Safely fetch role field
-        print('User role from Firestore: $role'); // Debugging Firestore value
-
+        String role = userDoc.get('role') ?? 'Unknown';
+        print('User role from Firestore: $role');
         setState(() {
           _message = "Login successful as $role!";
         });
 
-        // Navigate to NavigationController with the role
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => NavigationController(role: role)),
@@ -89,6 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -100,14 +91,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Text(
                   "Dobrodošli v KLUB+",
                   textAlign: TextAlign.center,
-                  style: AppStyles.headerTitle, // Use headerTitle from AppStyles
+                  style: AppStyles.headerTitle,
                 ),
                 const SizedBox(height: 20),
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    hintText: "@username",
-                    hintStyle: AppStyles.defaultDayTextStyle, // Match with text styling
+                    hintText: "@uporabniskoime",
+                    hintStyle: AppStyles.defaultDayTextStyle,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
@@ -118,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
-                    hintText: "Password",
+                    hintText: "Geslo",
                     hintStyle: AppStyles.defaultDayTextStyle,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
@@ -139,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: const Text(
                     "Prijava",
-                    style: AppStyles.calendarDayTextStyle, // Use consistent text styling
+                    style: AppStyles.calendarDayTextStyle,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -166,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 class NavigationController extends StatefulWidget {
-  final String role; // Accept the role
+  final String role;
   const NavigationController({super.key, required this.role});
 
   @override
@@ -175,8 +166,6 @@ class NavigationController extends StatefulWidget {
 
 class _NavigationControllerState extends State<NavigationController> {
   int _currentIndex = 0;
-
-  // Define pages and items for different roles
   late List<Widget> _pages;
   late List<BottomNavigationBarItem> _navItems;
 
@@ -218,8 +207,10 @@ class _NavigationControllerState extends State<NavigationController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         selectedItemColor: const Color(0xFF004d40),
         unselectedItemColor: Colors.grey,
         currentIndex: _currentIndex,

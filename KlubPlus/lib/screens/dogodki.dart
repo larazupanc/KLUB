@@ -19,6 +19,7 @@ class NekiScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.lightGreenAccent),
       ),
+      backgroundColor: Color(0xFFFAFAFA),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('dogodki').snapshots(),
         builder: (context, snapshot) {
