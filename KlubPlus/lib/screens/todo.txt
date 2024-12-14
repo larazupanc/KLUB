@@ -2,7 +2,7 @@ To-do
 Do 16. 12.:
 DONE ko se uporabnik prijavi se mi prikazujejo razlicni screeni glee na role
 pravilno prikazovanje na home screen +  izgled
-koledar- prikaz dogodkov in dodajanje preko koledarja
+DONE koledar- prikaz dogodkov in dodajanje preko koledarja
 
 Do 23.12.:
 generiranje wordovga dokumenta preko sestanka
