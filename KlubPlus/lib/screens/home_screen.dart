@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -14,22 +15,69 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Section for Meetings
-          _buildMeetingList(context),
-          // Section for Events
-          _buildEventList(context),
+          // Upper Half: Sestanki
+          Expanded(
+            child: _buildBlurredSection(
+              context,
+              title: 'Sestanki',
+              contentWidget: _buildMeetingList(context),
+            ),
+          ),
+          // Lower Half: Dogodki
+          Expanded(
+            child: _buildBlurredSection(
+              context,
+              title: 'Dogodki',
+              contentWidget: _buildEventList(context),
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildBlurredSection(BuildContext context, {required String title, required Widget contentWidget}) {
+    return Stack(
+      children: [
+        // Main content
+        ListView(
+          padding: const EdgeInsets.all(8.0),
+          children: [
+            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            contentWidget,
+          ],
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 20,
+          child: ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withOpacity(0.0),
+                      Colors.white.withOpacity(0.2),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   // Fetch and display meetings
   Widget _buildMeetingList(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('sestanki')
-          .limit(2)  // Limit the number of meetings to 2
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('sestanki').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -41,37 +89,22 @@ class HomeScreen extends StatelessWidget {
           return const Center(child: Text('Ni sestankov.'));
         }
 
-        final meetings = snapshot.data!.docs.map((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-
-          final title = data['naziv'] ?? 'Unknown';
-          final date = data['datum'] != null
-              ? DateFormat('dd. MM. yyyy').format((data['datum'] as Timestamp).toDate())
-              : 'Unknown';
-          final agenda = data['dnevni_red'] ?? 'Ni dnevnega reda';
-
-          return MeetingCard(
-            title: title,
-            date: date,
-            agenda: agenda,
-            onTap: () => _showMeetingDetails(context, title, date, agenda),
-          );
-        }).toList();
-
         return Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Sestanki', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: meetings.length,
-              itemBuilder: (context, index) => meetings[index],
-            ),
-          ],
+          children: snapshot.data!.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final title = data['naziv'] ?? 'Unknown';
+            final date = data['datum'] != null
+                ? DateFormat('dd. MM. yyyy').format((data['datum'] as Timestamp).toDate())
+                : 'Unknown';
+            final agenda = data['dnevni_red'] ?? 'Ni dnevnega reda';
+
+            return MeetingCard(
+              title: title,
+              date: date,
+              agenda: agenda,
+              onTap: () => _showMeetingDetails(context, title, date, agenda),
+            );
+          }).toList(),
         );
       },
     );
@@ -80,10 +113,7 @@ class HomeScreen extends StatelessWidget {
   // Fetch and display events
   Widget _buildEventList(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('dogodki')
-          .limit(2)  // Limit the number of events to 2
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('dogodki').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -95,47 +125,32 @@ class HomeScreen extends StatelessWidget {
           return const Center(child: Text('Ni dogodkov.'));
         }
 
-        final events = snapshot.data!.docs.map((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-
-          final title = data['naziv'] ?? 'Unknown';
-          final date = data['datum'] != null
-              ? DateFormat('dd. MM. yyyy').format((data['datum'] as Timestamp).toDate())
-              : 'Unknown';
-          final agenda = data['dnevni_red'] ?? 'Ni dnevnega reda';
-
-          return MeetingCard(
-            title: title,
-            date: date,
-            agenda: agenda,
-            onTap: () => _showEventDetails(context, title, date, agenda),
-          );
-        }).toList();
-
         return Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Dogodki', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: events.length,
-              itemBuilder: (context, index) => events[index],
-            ),
-          ],
+          children: snapshot.data!.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final title = data['naziv'] ?? 'Unknown';
+            final date = data['datum'] != null
+                ? DateFormat('dd. MM. yyyy').format((data['datum'] as Timestamp).toDate())
+                : 'Unknown';
+            final description = data['opis'] ?? 'Ni opisa';
+
+            return EventCard(
+              title: title,
+              date: date,
+              description: description,
+              onTap: () => _showEventDetails(context, title, date, description),
+            );
+          }).toList(),
         );
       },
     );
   }
 
-  // Show meeting details in a dialog
+  // Dialog for meetings
   void _showMeetingDetails(BuildContext context, String title, String date, String agenda) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(title),
           content: Column(
@@ -148,21 +163,18 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Zapri'),
-            ),
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Zapri')),
           ],
         );
       },
     );
   }
 
-  // Show event details in a dialog
-  void _showEventDetails(BuildContext context, String title, String date, String agenda) {
+  // Dialog for events
+  void _showEventDetails(BuildContext context, String title, String date, String description) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(title),
           content: Column(
@@ -171,14 +183,11 @@ class HomeScreen extends StatelessWidget {
             children: [
               Text('Datum: $date'),
               const SizedBox(height: 8.0),
-              Text('Dnevni red: $agenda'),
+              Text('Opis: $description'),
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Zapri'),
-            ),
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Zapri')),
           ],
         );
       },
@@ -192,12 +201,7 @@ class MeetingCard extends StatelessWidget {
   final String agenda;
   final VoidCallback onTap;
 
-  const MeetingCard({
-    required this.title,
-    required this.date,
-    required this.agenda,
-    required this.onTap,
-  });
+  const MeetingCard({required this.title, required this.date, required this.agenda, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -207,30 +211,42 @@ class MeetingCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(4.0),
-        child: Stack(
-          children: [
-            ListTile(
-              leading: Container(
-                width: 48.0,
-                height: 48.0,
-                decoration: BoxDecoration(
-                  color: Color(0xFF004d40),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.cases_sharp,
-                  color: Colors.lightGreenAccent,
-                  size: 24.0,
-                ),
-              ),
-              title: Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text('Datum: $date\nDnevni red: $agenda'),
-              isThreeLine: true,
-            ),
-          ],
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: const Color(0xFF004d40),
+            child: const Icon(Icons.cases_sharp, color: Colors.lightGreenAccent),
+          ),
+          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text('Datum: $date\nDnevni red: $agenda'),
+        ),
+      ),
+    );
+  }
+}
+
+class EventCard extends StatelessWidget {
+  final String title;
+  final String date;
+  final String description;
+  final VoidCallback onTap;
+
+  const EventCard({required this.title, required this.date, required this.description, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      elevation: 4,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(4.0),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: Colors.red,
+            child: const Icon(Icons.event, color: Colors.white),
+          ),
+          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text('Datum: $date\nOpis: $description'),
         ),
       ),
     );
