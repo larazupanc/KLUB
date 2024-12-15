@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:testni_app/main.dart';
+import 'package:testni_app/screens/obvestilascreen.dart';
 
 class NekiScreen extends StatelessWidget {
   final Map<String, IconData> categoryIcons = {
@@ -13,11 +15,13 @@ class NekiScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dogodki', style: TextStyle(color: Color(0xFF004d40))),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.lightGreenAccent),
+      appBar: CustomHeader(
+        onNotificationTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ObvestilaScreen()),
+          );
+        },
       ),
       backgroundColor: Color(0xFFFAFAFA),
       body: StreamBuilder<QuerySnapshot>(

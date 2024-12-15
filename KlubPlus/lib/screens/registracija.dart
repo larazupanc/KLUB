@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Firestore for saving data
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase Authentication
-import 'package:testni_app/css/styles.dart'; // Import your styles
+import 'package:testni_app/css/styles.dart';
+import 'package:testni_app/main.dart';
+import 'package:testni_app/screens/obvestilascreen.dart'; // Import your styles
 
 class UserRegistrationScreen extends StatefulWidget {
   const UserRegistrationScreen({Key? key}) : super(key: key);
@@ -79,13 +81,13 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Registracija novega uporabnika",
-          style: AppStyles.headerTitle,
-        ),
-        backgroundColor: AppStyles.headerBackgroundColor,
-        elevation: 0,
+      appBar: CustomHeader(
+        onNotificationTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ObvestilaScreen()),
+          );
+        },
       ),
       backgroundColor: Color(0xFAFAFAFA),
       body: Padding(

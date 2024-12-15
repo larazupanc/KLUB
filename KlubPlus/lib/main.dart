@@ -156,6 +156,52 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
+  final VoidCallback onNotificationTap; // Callback for the notification tap
+
+  const CustomHeader({super.key, required this.onNotificationTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: const Text(
+        "KLUB+",
+        style: TextStyle(
+          fontSize: 22.0,
+          color: Color(0xFF004d40),
+        ),
+      ),
+      backgroundColor: Colors.white,
+      actions: [
+        GestureDetector(
+          onTap: onNotificationTap,
+          child: Stack(
+            alignment: Alignment.topRight,
+            children: [
+              const Icon(Icons.notifications_none_sharp, size: 25, color: Colors.black),
+              Positioned(
+                top: 2,
+                right: 2,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
 class NavigationController extends StatefulWidget {
   final String role;
   const NavigationController({super.key, required this.role});

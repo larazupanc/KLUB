@@ -2,25 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:testni_app/css/styles.dart';
+import 'package:testni_app/main.dart';
+import 'package:testni_app/screens/obvestilascreen.dart';
+
 class KoledarScreen extends StatefulWidget {
   const KoledarScreen({super.key});
   @override
   _KoledarScreenState createState() => _KoledarScreenState();
 }
+
 class _KoledarScreenState extends State<KoledarScreen> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
   Map<DateTime, List<Map<String, dynamic>>> _events = {};
   Map<String, dynamic>? _selectedEventDetails;
 
+  // New variables for counters
+  int _sestankiCount = 0;
+  int _dogodkiCount = 0;
+
   @override
   void initState() {
     super.initState();
     _loadEvents();
+    _loadCounts();
+  }
+
+  Future<void> _loadCounts() async {
+    final sestankiSnapshot =
+    await FirebaseFirestore.instance.collection('sestanki').get();
+    final dogodkiSnapshot =
+    await FirebaseFirestore.instance.collection('dogodki').get();
+
+    setState(() {
+      _sestankiCount = sestankiSnapshot.size;
+      _dogodkiCount = dogodkiSnapshot.size;
+    });
   }
   Future<void> _loadEvents() async {
     final Map<DateTime, List<Map<String, dynamic>>> events = {};
-
     final dogodkiSnapshot =
     await FirebaseFirestore.instance.collection('dogodki').get();
     for (var doc in dogodkiSnapshot.docs) {
@@ -66,130 +86,130 @@ class _KoledarScreenState extends State<KoledarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Koledar",
-          style: AppStyles.headerTitle,
-        ),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppStyles.iconColor),
+      appBar: CustomHeader(
+        onNotificationTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ObvestilaScreen()),
+          );
+        },
       ),
       backgroundColor: Color(0xFAFAFAFA),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TableCalendar(
-              firstDay: DateTime.utc(2020, 1, 1),
-              lastDay: DateTime.utc(2030, 12, 31),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                  _selectedEventDetails = null;
-                });
-              },
-              eventLoader: (day) {
-                final normalizedDay = DateTime(day.year, day.month, day.day);
-                return _events[normalizedDay] ?? [];
-              },
-              calendarStyle: CalendarStyle(
-                todayDecoration: BoxDecoration(
-                  color:  Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                selectedDecoration: BoxDecoration(
-                  color: AppStyles.selectedDayColor,
-                  shape: BoxShape.circle,
-                ),
-                markerDecoration: const BoxDecoration(
-                  color: Colors.transparent,
-                ),
-              ),
-              headerStyle: HeaderStyle(
-                titleCentered: true,
-                formatButtonVisible: false,
-                titleTextStyle: AppStyles.headerTextStyle,
-              ),
-              calendarBuilders: CalendarBuilders(
-                markerBuilder: (context, day, events) {
-                  if (events.isEmpty) return null;
-
-                  final dogodki = events
-                      .where((e) => (e as Map<String, dynamic>)['type'] == 'Dogodek')
-                      .toList();
-                  final sestanki = events
-                      .where((e) => (e as Map<String, dynamic>)['type'] == 'Sestanek')
-                      .toList();
-
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (dogodki.isNotEmpty)
-                        _buildMarker(Colors.red, dogodki.length),
-                      if (sestanki.isNotEmpty)
-                        _buildMarker(Colors.blue, sestanki.length),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(), // Optional: Smooth scrolling effect
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8.0,
+                        offset: Offset(0, 4),
+                      ),
                     ],
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            Text(
-              "Selected Date: ${_selectedDay.toLocal()}".split(' ')[0],
-              style: AppStyles.selectedDateTextStyle,
-            ),
-            const SizedBox(height: 16.0),
-            Expanded(
-              child: _events[DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day)] != null
-                  ? ListView.builder(
-                itemCount: _events[DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day)]!.length,
-                itemBuilder: (context, index) {
-                  final event = _events[DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day)]![index];
-                  return Card(
-                    child: ListTile(
-                      title: Text('${event['type']}: ${event['naziv']}'),
-                      onTap: () {
-                        setState(() {
-                          _selectedEventDetails = event;
-                        });
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      _buildCounter('Sestankov v 2024', _sestankiCount, Icons.meeting_room),
+                      _buildCounter('Dogodki v 2024', _dogodkiCount, Icons.celebration),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8.0,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TableCalendar(
+                    firstDay: DateTime.utc(2020, 1, 1),
+                    lastDay: DateTime.utc(2030, 12, 31),
+                    focusedDay: _focusedDay,
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                        _selectedEventDetails = null;
+                        _openEventDetails(selectedDay);
+                      });
+                    },
+                    eventLoader: (day) {
+                      final normalizedDay = DateTime(day.year, day.month, day.day);
+                      return _events[normalizedDay] ?? [];
+                    },
+                    calendarStyle: CalendarStyle(
+                      todayDecoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      selectedDecoration: BoxDecoration(
+                        color: AppStyles.selectedDayColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    headerStyle: HeaderStyle(
+                      titleCentered: true,
+                      formatButtonVisible: false,
+                      titleTextStyle: AppStyles.headerTextStyle,
+                    ),
+                    calendarBuilders: CalendarBuilders(
+                      markerBuilder: (context, day, events) {
+                        if (events.isEmpty) return null;
+
+                        final dogodki = events
+                            .where((e) => (e as Map<String, dynamic>)['type'] == 'Dogodek')
+                            .toList();
+                        final sestanki = events
+                            .where((e) => (e as Map<String, dynamic>)['type'] == 'Sestanek')
+                            .toList();
+
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (dogodki.isNotEmpty) _buildMarker(Colors.red, dogodki.length),
+                            if (sestanki.isNotEmpty) _buildMarker(Colors.blue, sestanki.length),
+                          ],
+                        );
                       },
                     ),
-                  );
-                },
-              )
-                  : const Center(child: Text('Na ta dan ni dogodkov.')),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                _selectedEventDetails != null
+                    ? _buildEventDetailsWindow()
+                    : const Center(child: Text('Izberite datum za ogled podrobnosti.')),
+              ],
             ),
-            const SizedBox(height: 16.0),
-            if (_selectedEventDetails != null) _buildEventDetailsWindow(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMarker(Color color, int count) {
-    return Container(
-      width: 16.0,
-      height: 16.0,
-      margin: const EdgeInsets.symmetric(horizontal: 2.0),
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
-      child: Center(
-        child: Text(
-          '$count',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 10.0,
-            fontWeight: FontWeight.bold,
           ),
         ),
       ),
     );
+  }
+  void _openEventDetails(DateTime selectedDay) {
+    final normalizedDay = DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
+    final events = _events[normalizedDay];
+
+    if (events != null && events.isNotEmpty) {
+      setState(() {
+        _selectedEventDetails = events[0];
+      });
+    }
   }
 
   Widget _buildEventDetailsWindow() {
@@ -218,4 +238,59 @@ class _KoledarScreenState extends State<KoledarScreen> {
       ),
     );
   }
-}
+
+
+
+  Widget _buildCounter(String title, int count, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.0),
+
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.green[900],
+            ),
+          ),
+          Row(
+            children: [
+              Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: 26.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              Icon(
+                icon,
+                size: 28.0,
+                color: Colors.black, // Icon color
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMarker(Color color, int count) {
+    return Container(
+      width: 16.0,
+      height: 16.0,
+      margin: const EdgeInsets.symmetric(horizontal: 2.0),
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      child: Center(
+        child: Text('$count', style: const TextStyle(color: Colors.white, fontSize: 10.0)),
+      ),
+    );
+  }}

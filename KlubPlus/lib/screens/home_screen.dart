@@ -2,16 +2,20 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:testni_app/main.dart';
+import 'package:testni_app/screens/obvestilascreen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Klub+', style: TextStyle(color: Color(0xFF004d40))),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.lightGreenAccent),
+      appBar: CustomHeader(
+        onNotificationTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ObvestilaScreen()),
+          );
+        },
       ),
       backgroundColor: Color(0xFAFAFAFA),
 
