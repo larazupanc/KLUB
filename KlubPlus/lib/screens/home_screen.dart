@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:testni_app/main.dart';
 import 'package:testni_app/screens/obvestilascreen.dart';
+import 'package:testni_app/screens/pogovor.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -13,7 +14,7 @@ class HomeScreen extends StatelessWidget {
         onNotificationTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ObvestilaScreen()),
+            MaterialPageRoute(builder: (context) =>  GroupChatScreen()),
           );
         },
       ),

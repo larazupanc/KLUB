@@ -3,11 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Add Firestore import
 import 'package:testni_app/screens/dogodki.dart';
+import 'package:testni_app/screens/uporabniki.dart';
 import 'screens/home_screen.dart';
 import 'screens/koledar_screen.dart';
 import 'screens/sestanki.dart';
 import 'screens/registracija.dart';
 import 'css/styles.dart'; // Import the AppStyles
+import 'package:intl/intl_standalone.dart'; // Import initializeDateFormatting
+import 'package:intl/intl.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -157,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
-  final VoidCallback onNotificationTap; // Callback for the notification tap
+  final VoidCallback onNotificationTap;
 
   const CustomHeader({super.key, required this.onNotificationTap});
 
@@ -225,7 +228,7 @@ class _NavigationControllerState extends State<NavigationController> {
         KoledarScreen(),
         SestankiScreen(),
         NekiScreen(),
-        UserRegistrationScreen(),
+        UserListScreen(),
       ];
       _navItems = const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Domov'),

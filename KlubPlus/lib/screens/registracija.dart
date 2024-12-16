@@ -81,13 +81,16 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomHeader(
-        onNotificationTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ObvestilaScreen()),
-          );
-        },
+      appBar: AppBar(
+        title: const Text(
+          "Registracija novega uporabnika",
+          style: TextStyle(
+            fontSize: 19.0,
+            color: Color(0xFF004d40),
+          ),
+        ),        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       backgroundColor: Color(0xFAFAFAFA),
       body: Padding(
