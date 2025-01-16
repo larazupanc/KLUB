@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:testni_app/main.dart';
 import 'package:testni_app/screens/obvestilascreen.dart';
-import 'package:testni_app/screens/pogovor.dart';
+import 'package:testni_app/screens/chat.dart';
+
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -14,7 +15,7 @@ class HomeScreen extends StatelessWidget {
         onNotificationTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  GroupChatScreen()),
+            MaterialPageRoute(builder: (context) =>  GroupChatScreen(userEmail: '',)),
           );
         },
       ),
@@ -61,7 +62,7 @@ class HomeScreen extends StatelessWidget {
           height: 20,
           child: ClipRect(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 10.0),
+              filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(

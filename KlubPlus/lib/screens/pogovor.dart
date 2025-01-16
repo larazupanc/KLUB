@@ -86,7 +86,10 @@ class MessageBubble extends StatelessWidget {
           children: [
             Text(
               senderName,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0, color: Colors.black54),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.0,
+                  color: Colors.black54),
             ),
             const SizedBox(height: 4),
             Text(
@@ -115,10 +118,13 @@ class _MessageInputState extends State<MessageInput> {
       final message = _controller.text.trim();
       _controller.clear();
 
+      // Ensure the user has a displayName set
+      final senderName = user.displayName ?? "Anonymous";
+
       // Save message to Firestore
       await FirebaseFirestore.instance.collection('messages').add({
         'senderId': user.uid,
-        'senderName': user.displayName ?? "Anonymous", // Ensure user's name is used
+        'senderName': senderName, // Use displayName as senderName
         'message': message,
         'timestamp': FieldValue.serverTimestamp(),
       });

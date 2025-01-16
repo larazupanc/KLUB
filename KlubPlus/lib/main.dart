@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Add Firestore import
+import 'package:testni_app/screens/chat.dart';
 import 'package:testni_app/screens/dogodki.dart';
 import 'package:testni_app/screens/uporabniki.dart';
 import 'screens/home_screen.dart';
@@ -24,7 +25,7 @@ class MojaAplikacija extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'KlubPlus',
+      title: 'KLUB PLUS',
       home: const LoginScreen(),
     );
   }
@@ -51,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       String userId = userCredential.user!.uid;
+      String userEmail = userCredential.user!.email!;
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
@@ -63,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _message = "Login successful as $role!";
         });
 
+        // Navigate to NavigationController first
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => NavigationController(role: role)),
@@ -82,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFAFAFAFA),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -92,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  "Dobrodošli v KLUB+",
+                  "Dobrodošli v KLUB PLUS",
                   textAlign: TextAlign.center,
                   style: AppStyles.headerTitle,
                 ),
@@ -103,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: "@uporabniskoime",
                     hintStyle: AppStyles.defaultDayTextStyle,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
                 ),
@@ -115,10 +118,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: "Geslo",
                     hintStyle: AppStyles.defaultDayTextStyle,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(30.0),
                     ),
-                    suffixIcon: Icon(Icons.visibility_off,
-                        color: AppStyles.iconColorKoledar),
+                    suffixIcon: Icon(Icons.visibility_off, color: AppStyles.iconColorKoledar),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -127,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppStyles.iconBackgroundColor,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(30.0),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                   ),
@@ -207,6 +209,7 @@ class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
 }
 class NavigationController extends StatefulWidget {
   final String role;
+
   const NavigationController({super.key, required this.role});
 
   @override
@@ -222,6 +225,7 @@ class _NavigationControllerState extends State<NavigationController> {
   void initState() {
     super.initState();
 
+    // Initialize pages and nav items based on user role
     if (widget.role == 'Predsednik') {
       _pages = [
         HomeScreen(),
@@ -251,6 +255,18 @@ class _NavigationControllerState extends State<NavigationController> {
         BottomNavigationBarItem(icon: Icon(Icons.cases_sharp), label: 'Sestanki'),
       ];
     }
+
+    // Navigate to GroupChatScreen after a short delay (you can change this as needed)
+    Future.delayed(Duration(seconds: 2), () {
+      String userEmail = FirebaseAuth.instance.currentUser!.email!; // Get the current user's email
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GroupChatScreen(userEmail: userEmail),
+        ),
+      );
+    });
   }
 
   @override

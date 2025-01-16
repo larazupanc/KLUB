@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:testni_app/css/styles.dart';
 import 'package:testni_app/main.dart';
@@ -118,8 +119,8 @@ class _KoledarScreenState extends State<KoledarScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      _buildCounter('Sestankov v 2024', _sestankiCount, Icons.meeting_room),
-                      _buildCounter('Dogodki v 2024', _dogodkiCount, Icons.celebration),
+                      _buildCounter('Sestankov v 2025', _sestankiCount, Icons.meeting_room),
+                      _buildCounter('Dogodkov v 2025', _dogodkiCount, Icons.celebration),
                     ],
                   ),
                 ),
@@ -136,64 +137,64 @@ class _KoledarScreenState extends State<KoledarScreen> {
                       ),
                     ],
                   ),
-                  child: TableCalendar(
-                    firstDay: DateTime.utc(2020, 1, 1),
-                    lastDay: DateTime.utc(2030, 12, 31),
-                    focusedDay: _focusedDay,
-                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                    onDaySelected: (selectedDay, focusedDay) {
-                      setState(() {
-                        _selectedDay = selectedDay;
-                        _focusedDay = focusedDay;
-                        _selectedEventDetails = null;
-                        _openEventDetails(selectedDay);
-                      });
-                    },
-                    eventLoader: (day) {
-                      final normalizedDay = DateTime(day.year, day.month, day.day);
-                      return _events[normalizedDay] ?? [];
-                    },
-                    calendarStyle: CalendarStyle(
-                      todayDecoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      selectedDecoration: BoxDecoration(
-                        color: AppStyles.selectedDayColor,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    headerStyle: HeaderStyle(
-                      titleCentered: true,
-                      formatButtonVisible: false,
-                      titleTextStyle: AppStyles.headerTextStyle,
-                    ),
-                    calendarBuilders: CalendarBuilders(
-                      markerBuilder: (context, day, events) {
-                        if (events.isEmpty) return null;
-
-                        final dogodki = events
-                            .where((e) => (e as Map<String, dynamic>)['type'] == 'Dogodek')
-                            .toList();
-                        final sestanki = events
-                            .where((e) => (e as Map<String, dynamic>)['type'] == 'Sestanek')
-                            .toList();
-
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (dogodki.isNotEmpty) _buildMarker(Colors.red, dogodki.length),
-                            if (sestanki.isNotEmpty) _buildMarker(Colors.blue, sestanki.length),
-                          ],
-                        );
+                    child: TableCalendar(
+                      firstDay: DateTime.utc(2020, 1, 1),
+                      lastDay: DateTime.utc(2030, 12, 31),
+                      focusedDay: _focusedDay,
+                      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          _selectedDay = selectedDay;
+                          _focusedDay = focusedDay;
+                          _selectedEventDetails = null;
+                          _openEventDetails(selectedDay);
+                        });
                       },
+                      eventLoader: (day) {
+                        final normalizedDay = DateTime(day.year, day.month, day.day);
+                        return _events[normalizedDay] ?? [];
+                      },
+                      calendarStyle: CalendarStyle(
+                        todayDecoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        selectedDecoration: BoxDecoration(
+                          color: AppStyles.selectedDayColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      headerStyle: HeaderStyle(
+                        titleCentered: true,
+                        formatButtonVisible: false,
+                        titleTextStyle: AppStyles.headerTextStyle,
+                      ),
+                      calendarBuilders: CalendarBuilders(
+                        markerBuilder: (context, day, events) {
+                          if (events.isEmpty) return null;
+
+                          final dogodki = events
+                              .where((e) => (e as Map<String, dynamic>)['type'] == 'Dogodek')
+                              .toList();
+                          final sestanki = events
+                              .where((e) => (e as Map<String, dynamic>)['type'] == 'Sestanek')
+                              .toList();
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (dogodki.isNotEmpty) _buildMarker(Colors.red, dogodki.length),
+                              if (sestanki.isNotEmpty) _buildMarker(Colors.blue, sestanki.length),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16.0),
-                _selectedEventDetails != null
-                    ? _buildEventDetailsWindow()
-                    : const Center(child: Text('Izberite datum za ogled podrobnosti.')),
+                  const SizedBox(height: 16.0),
+                  _selectedEventDetails != null
+                      ? _buildEventDetailsWindow()
+                      : const Center(child: Text('Izberite datum za ogled podrobnosti.')),
               ],
             ),
           ),

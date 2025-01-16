@@ -1,8 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:testni_app/main.dart';
 import 'package:testni_app/screens/obvestilascreen.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:archive/archive_io.dart';
+import 'package:flutter/services.dart';
+import 'package:docx_template/docx_template.dart';
+
 
 class SestankiScreen extends StatelessWidget {
   @override
@@ -96,7 +104,51 @@ class SestankiScreen extends StatelessWidget {
     );
   }
 
-  void _showMeetingDetails(BuildContext context, String title, String date, String agenda) {
+  void _showMeetingDetails(BuildContext context, String title, String date, String agenda) async {
+    Future<void> _generateWordDocument(
+        BuildContext context, String title, String date, String agenda) async {
+      try {
+        // Load the template from assets using rootBundle
+        final ByteData data = await rootBundle.load('assets/template.docx');
+        final List<int> bytes = data.buffer.asUint8List();
+
+        // Load the DOCX template
+        final docx = await DocxTemplate.fromBytes(bytes);
+
+        // Define the data to fill in the document
+        Content content = Content();
+        content
+          ..add(TextContent("title", title))
+          ..add(TextContent("date", date))
+          ..add(TextContent("agenda", agenda));
+
+        // Generate the document
+        final d = await docx.generate(content);
+
+        if (d != null) {
+          // Get the directory to save the document
+          final Directory directory = await getApplicationDocumentsDirectory();
+          final String filePath = '${directory.path}/$title.docx';
+
+          // Save the document
+          final File file = File(filePath);
+          await file.writeAsBytes(d);
+
+          // Open the document
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Document saved to $filePath")),
+          );
+          await OpenFilex.open(filePath); // Corrected method name here
+        } else {
+          throw Exception("Document generation failed.");
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: ${e.toString()}")),
+        );
+      }
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -116,12 +168,17 @@ class SestankiScreen extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Zapri'),
             ),
+            ElevatedButton(
+              onPressed: () async {
+                await _generateWordDocument(context, title, date, agenda);
+              },
+              child: const Text('Prenesi dokument'),
+            ),
           ],
         );
       },
     );
   }
-
   void _deleteMeeting(BuildContext context, String docId) {
     showDialog(
       context: context,

@@ -20,7 +20,6 @@ version: 1.0.0+1
 
 environment:
   sdk: ^3.5.3
-
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
 # consider running `flutter pub upgrade --major-versions`. Alternatively,
@@ -37,6 +36,12 @@ dependencies:
   firebase_core: ^3.8.1
   cloud_firestore: ^5.5.1
   intl: ^0.18.0
+  flutter_tts: ^3.6.0
+  path_provider: ^2.0.15
+  open_filex: ^4.1.0
+  archive: ^3.3.0
+  docx_template: ^0.4.0
+
 
 
 
