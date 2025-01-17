@@ -256,7 +256,6 @@ class _NavigationControllerState extends State<NavigationController> {
       ];
     }
 
-    // Navigate to GroupChatScreen after a short delay (you can change this as needed)
     Future.delayed(Duration(seconds: 2), () {
       String userEmail = FirebaseAuth.instance.currentUser!.email!; // Get the current user's email
 
